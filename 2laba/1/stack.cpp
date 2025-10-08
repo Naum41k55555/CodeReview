@@ -1,86 +1,108 @@
-/*Дано число D и указатель P1 на вершину непустого стека. 
-Добавить элемент со значением D в стек и вывести адрес P2 новой вершины стека.
+/* 
+Элементами контейнеров являются целые числа. Для
+заполнения контейнера использовать итератор и конструктор соответствующего контейнера,
+для вывода элементов использовать итератор (для вывода элементов в обратном порядке
+использовать обратные итераторы, возвращаемые функциями-членами rbegin и rend)
+Обязательно наличие дружественного интерфейса. Ввод данных организовать 
+разными способами (с клавиатуры, рандом, из файла)
 
-Для каждой динамической структуры должен быть предусмотрен стандартный набор методов - 
-добавления/удаления/вывода элементов. 
-Во всех задачах обязательно наличие дружественного интерфейса. Ввод данных с клавиатуры.
+Даны вектор V, дек D и список L. Каждый исходный контейнер содержит не менее
+двух элементов, количество элементов является четным. Поменять значения двух средних
+элементов каждого из исходных контейнеров. Использовать алгоритм swap (не путать его с
+одноименной функцией-членом контейнера).
+*/
 
-В заданиях подгруппы структура «стек» (stack) моделируется цепочкой связанных
-узлов-записей типа TNode. Поле Next последнего элемента цепочки равно nullptr. Вершиной
-стека (top) считается первый элемент цепочки. Для доступа к стеку используется указатель на
-его вершину (для пустого стека данный указатель полагается равным nullptr). Значением
-элемента стека считается значение его поля Data*/
 
 #include "stack.h"
-#include <sstream>
-using namespace std;
+#include <iostream>
 
-class TNode {
-public:
-    int data;
-    TNode* next;
+/**
+ * @brief Конструктор узла стека
+ * @param value Значение узла
+ */
+Node::Node(int value) : data(value), next(nullptr) {}
 
-    TNode(int value) : data(value), next(nullptr) {}
-};
+/**
+ * @brief Конструктор стека (инициализирует пустой стек)
+ */
+Stack::Stack() : top(nullptr) {}
 
-class Stack {
-private:
-    TNode* top;
+/**
+ * @brief Деструктор стека (автоматически очищает память)
+ */
+Stack::~Stack() {
+    ClearStack();
+}
 
-public:
-    Stack() : top(nullptr) {}
-    ~Stack() { clearStack(); }
+/**
+ * @brief Добавляет элемент на вершину стека
+ * @param value Значение для добавления
+ */
+void Stack::Push(int value) {
+    Node* newNode = new Node(value); // Создаем новый узел
+    newNode->next = top;            // Новый узел ссылается на текущую вершину
+    top = newNode;                  // Обновляем вершину стека
+    std::cout << "Элемент " << value << " добавлен в стек." << std::endl;
+}
 
-    bool isEmpty() const { return top == nullptr; }
-
-    void push(int value) {
-        TNode* newNode = new TNode(value);
-        newNode->next = top;
-        top = newNode;
+/**
+ * @brief Удаляет элемент с вершины стека
+ */
+void Stack::Pop() {
+    if (top == nullptr) {
+        std::cout << "Стек пуст! Невозможно удалить элемент." << std::endl;
+        return;
     }
+    Node* temp = top;       // Сохраняем текущую вершину
+    top = top->next;        // Перемещаем вершину на следующий элемент
+    std::cout << "Элемент " << temp->data << " удален из стека." << std::endl;
+    delete temp;            // Освобождаем память
+}
 
-    bool pop() {
-        if (isEmpty()) return false;
+/**
+ * @brief Выводит содержимое стека
+ */
+void Stack::Print() {
+    if (top == nullptr) {
+        std::cout << "Стек пуст!" << std::endl;
+        return;
+    }
+    Node* current = top;
+    std::cout << "Элементы стека: ";
+    while (current != nullptr) {
+        std::cout << current->data << " ";
+        current = current->next;
+    }
+    std::cout << std::endl;
+}
 
-        TNode* temp = top;
+/**
+ * @brief Возвращает указатель на вершину стека
+ * @return Указатель на вершину стека
+ */
+Node* Stack::GetTop() {
+    return top;
+}
+
+/**
+ * @brief Очищает стек (удаляет все элементы)
+ */
+void Stack::ClearStack() {
+    while (top != nullptr) {
+        Node* temp = top;
         top = top->next;
         delete temp;
-        return true;
     }
+    std::cout << "Стек очищен." << std::endl;
+}
 
-    bool peek(int& value) const {
-        if (isEmpty()) return false;
-        value = top->data;
-        return true;
-    }
-
-    string toString() const {
-        if (isEmpty()) return "Стек пуст!";
-
-        ostringstream oss;
-        oss << "Элементы стека: ";
-
-        TNode* current = top;
-        while (current != nullptr) {
-            oss << current->data << " ";
-            current = current->next;
-        }
-
-        return oss.str();
-    }
-
-    void clearStack() {
-        while (!isEmpty()) {
-            pop();
-        }
-    }
-
-    TNode* getTop() const { return top; }
-
-    friend void addElementAndPrintAddress(Stack& stack, int D);
-};
-
-void addElementAndPrintAddress(Stack& stack, int D) {
-    stack.push(D);
-    cout << "Адрес новой вершины стека: " << stack.getTop() << std::endl;
+/**
+ * @brief Дружественная функция для добавления элемента и вывода адреса вершины
+ * @param stack Стек для модификации
+ * @param D Значение для добавления
+ */
+void AddElementAndPrintAddress(Stack& stack, int D) {
+    stack.Push(D);  // Добавляем элемент в стек
+    // Выводим адрес новой вершины
+    std::cout << "Адрес новой вершины стека: " << stack.GetTop() << std::endl; 
 }
