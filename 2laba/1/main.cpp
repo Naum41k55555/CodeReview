@@ -16,7 +16,8 @@
 
 int main() {
     Stack stack;
-    int choice, value;
+    int choice = 0;
+    int value = 0;
 
     while (true) {
         std::cout << "\nМеню:\n";
