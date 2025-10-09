@@ -25,7 +25,7 @@ int main() {
 
     std::cout << "Введите 10 чисел:\n";
     for (int i = 1; i <= 10; i++) {
-        int number = 0;
+        int number;
         std::cout << "Число " << i << ": ";
         std::cin >> number;
 
